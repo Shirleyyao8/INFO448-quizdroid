@@ -1,36 +1,40 @@
 package edu.uw.ischool.yuhuiyao.quizdroid
-
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 
 class MainActivity : AppCompatActivity() {
-    private val topics = arrayOf("Math", "Physics", "Marvel Super Heroes")
+    private lateinit var topicRepository: TopicRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val listView = findViewById<ListView>(R.id.topicListView)
+        topicRepository = InMemoryTopicRepository()
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, topics)
+        val listView = findViewById<ListView>(R.id.topicListView)
+        val topics = topicRepository.getTopics()
+
+        // Create a list of strings that includes both title and shortDescription
+        val topicsWithDescriptions = topics.map { "${it.title} - ${it.shortDescription}" }.toTypedArray()
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, topicsWithDescriptions)
         listView.adapter = adapter
 
         listView.setOnItemClickListener { _, _, position, _ ->
-            // Handle item click here
-            val selectedTopic = topics[position]
+            val selectedTopic = topics[position] // Get the selected topic object
             navigateToTopicOverview(selectedTopic)
         }
     }
 
-    private fun navigateToTopicOverview(topicName: String) {
+    private fun navigateToTopicOverview(topic: Topic) {
         val intent = Intent(this, TopicOverviewActivity::class.java)
-        intent.putExtra("selectedTopic", topicName)
+        intent.putExtra("selectedTopic", topic.title)
         startActivity(intent)
     }
-
 }

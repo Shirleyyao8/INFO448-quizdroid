@@ -6,56 +6,60 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import android.widget.Button
 
+
+
+
 class TopicOverviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_topic_overview)
+
 
         val topicTitle = findViewById<TextView>(R.id.topicTitle)
         val topicDescription = findViewById<TextView>(R.id.topicDescription)
         val questionsNumber = findViewById<TextView>(R.id.questionsNumber)
         val beginButton = findViewById<Button>(R.id.beginButton)
 
-        // Get the selected topic from the "Topic List" page
-        val selectedTopic = intent.getStringExtra("selectedTopic")
 
-        // Display the topic title and description based on the selected topic
-        when (selectedTopic) {
-            "Math" -> {
-                topicTitle.text = "Math Overview"
-                topicDescription.text = "This topic covers various mathematical concepts and problems."
-                questionsNumber.text = "Total number of questions: 2"
+        // Get the selected topic title from the "Topic List" page
+        val selectedTopicTitle = intent.getStringExtra("selectedTopic")
 
-                beginButton.setOnClickListener {
-                    val intent = Intent(this, firstMathQuestion::class.java)
-                    startActivity(intent)
-                }
-            }
-            "Physics" -> {
-                topicTitle.text = "Physics Overview"
-                topicDescription.text = "Learn about the laws of physics and the behavior of matter and energy."
-                questionsNumber.text = "Total number of questions: 2"
 
-                beginButton.setOnClickListener {
-                    val intent = Intent(this, firstPhysicsQuestion::class.java)
-                    startActivity(intent)
-                }
-            }
-            "Marvel Super Heroes" -> {
-                topicTitle.text = "Marvel Super Heroes Overview"
-                topicDescription.text = "Explore the world of Marvel superheroes and their adventures."
-                questionsNumber.text = "Total number of questions: 2"
+        // Initialize a topic repository
+        val topicRepository: TopicRepository = InMemoryTopicRepository()
 
-                beginButton.setOnClickListener {
-                    val intent = Intent(this, firstMarvelQuestion::class.java)
-                    startActivity(intent)
-                }
-            }
-            else -> {
-                // Handle unknown topics or provide a default description
-            }
+
+        // Find the selected topic from the repository
+        val selectedTopic = topicRepository.getTopics().find { it.title == selectedTopicTitle }
+
+
+        // Check if the selected topic exists
+        if (selectedTopic != null) {
+            // Display the selected topic title
+            topicTitle.text = selectedTopic.title
+
+
+            // Display the long description based on the selected topic
+            topicDescription.text = selectedTopic.longDescription
+
+
+            // Display the number of questions
+            questionsNumber.text = "Total number of questions: ${selectedTopic.questions.size}"
+        } else {
+            // Handle the case where the topic title is not found
+            // You can show an error message or navigate back to the topic list
         }
 
+        var questionIndex = 0
+        var correctAnswerCount = 0
 
+        beginButton.setOnClickListener {
+            // Now you can start the question activity with the selected topic title
+            val intent = Intent(this, QuestionActivity::class.java)
+            intent.putExtra("selectedTopic", selectedTopicTitle)
+            intent.putExtra("questionIndex", questionIndex)
+            intent.putExtra("correctAnswerCount", correctAnswerCount)
+            startActivity(intent)
+        }
     }
 }
