@@ -21,6 +21,6 @@ class QuizApp : Application() {
         super.onCreate()
         Log.d("QuizApp", "QuizApp is being loaded and run")
         instance = this
-        topicRepository = InMemoryTopicRepository() // You can use any implementation you like here
+        topicRepository = InMemoryTopicRepository(applicationContext) // You can use any implementation you like here
     }
 }

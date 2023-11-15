@@ -12,52 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quizdroid"
         android:name=".QuizApp"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
-        <activity
-            android:name=".secondMarvelAnswer"
-            android:exported="false" />
-        <activity
-            android:name=".firstMarvelAnswer"
-            android:exported="false" />
-        <activity
-            android:name=".secondPhysicsAnswer"
-            android:exported="false" />
-        <activity
-            android:name=".firstPhysicsAnswer"
-            android:exported="false" />
-        <activity
-            android:name=".secondMarvelQuestion"
-            android:exported="false" />
-        <activity
-            android:name=".secondPhysicsQuestion"
-            android:exported="false" />
-        <activity
-            android:name=".firstMarvelQuestion"
-            android:exported="false" />
-        <activity
-            android:name=".firstPhysicsQuestion"
-            android:exported="false" />
-        <activity
-            android:name=".secondMathAnswer"
-            android:exported="false" />
-        <activity
-            android:name=".secondMathQuestion"
-            android:exported="false" />
-        <activity
-            android:name=".firstMathAnswer"
-            android:exported="false" />
-        <activity
-            android:name=".firstMathQuestion"
-            android:exported="false" />
-        <activity
-            android:name=".AnswerActivity"
-            android:exported="false" />
+
         <activity
             android:name=".QuestionActivity"
             android:exported="false" />
         <activity
+            android:name=".AnswerActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".TopicOverviewActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -68,5 +36,8 @@
             </intent-filter>
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
 </manifest>

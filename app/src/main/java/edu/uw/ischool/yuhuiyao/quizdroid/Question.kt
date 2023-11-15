@@ -1,20 +1,49 @@
 package edu.uw.ischool.yuhuiyao.quizdroid
+import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.withContext
+import androidx.multidex.MultiDex
+import androidx.multidex.MultiDexApplication
+import java.io.FileReader
+import java.io.File
+
 
 // Domain Objects
 
+// before
+//data class Topic(
+//    val title: String,
+//    val shortDescription: String,
+//    val longDescription: String,
+//    val questions: List<Question>
+//)
 
 data class Topic(
     val title: String,
-    val shortDescription: String,
-    val longDescription: String,
+    val desc: String,
     val questions: List<Question>
 )
 
+// before
+//data class Question(
+//    val questionText: String,
+//    val answerChoices: List<String>,
+//    val correctAnswerIndex: Int
+//)
 
 data class Question(
-    val questionText: String,
-    val answerChoices: List<String>,
-    val correctAnswerIndex: Int
+    val text: String,
+    val answers: List<String>,
+    val answer: Int
 )
 
 
@@ -24,85 +53,93 @@ data class Quiz(
     val correctAnswerIndex: Int
 )
 
-
-// TopicRepository Interface
-
-
 interface TopicRepository {
     fun getTopics(): List<Topic>
 }
 
 
-// In-Memory Implementation of TopicRepository
+class InMemoryTopicRepository(private val applicationContext: Context) : TopicRepository {
+    private var topics: List<Topic> = emptyList()
+    private var isInitialized = false
 
+//    init {
+//        // Use a coroutine to perform the file reading on a background thread
+//        GlobalScope.launch(Dispatchers.IO) {
+//            val json = readJsonFromFile("questions.json")
+//            topics = Gson().fromJson(json, object : TypeToken<List<Topic>>() {}.type)
+//            isInitialized = true
+//        }
+//    }
 
-class InMemoryTopicRepository : TopicRepository {
-    private val topics: List<Topic> = listOf(
-        Topic(
-            title = "Math",
-            shortDescription = "The world of numbers and equations",
-            longDescription = "Mathematics is the science of numbers, quantities, and shapes. It plays a crucial role in various fields.",
-            questions = listOf(
-                Question(
-                    questionText = "What is 2 + 2?",
-                    answerChoices = listOf("3", "4", "5", "6"),
-                    correctAnswerIndex = 1
-                ),
-                Question(
-                    questionText = "What is the square root of 16?",
-                    answerChoices = listOf("2", "4", "8", "16"),
-                    correctAnswerIndex = 1
-                )
-            )
-        ),
-        Topic(
-            title = "Physics",
-            shortDescription = "The study of matter, energy, and the universe",
-            longDescription = "Physics is the fundamental science that seeks to understand the laws governing the behavior of the universe.",
-            questions = listOf(
-                Question(
-                    questionText = "What is the SI unit for measuring time?",
-                    answerChoices = listOf("Hour", "Day", "Second", "Minute"),
-                    correctAnswerIndex = 2
-                ),
-                Question(
-                    questionText = "What force keeps the planets in orbit around the sun?",
-                    answerChoices = listOf(
-                        "Electromagnetic force",
-                        "Gravity",
-                        "Nuclear force",
-                        "Friction"
-                    ),
-                    correctAnswerIndex = 1
-                )
-            )
-        ),
-        Topic(
-            title = "Marvel Heroes",
-            shortDescription = "Explore the Marvel superhero universe",
-            longDescription = "Marvel heroes are iconic characters with superhuman abilities, known for their epic adventures.",
-            questions = listOf(
-                Question(
-                    questionText = "Who is the strongest Avenger?",
-                    answerChoices = listOf("Iron Man", "Thor", "Black Widow", "Hulk"),
-                    correctAnswerIndex = 3
-                ),
-                Question(
-                    questionText = "What is the real name of Captain America?",
-                    answerChoices = listOf(
-                        "Tony Stark",
-                        "Bruce Banner",
-                        "Steve Rogers",
-                        "Peter Parker"
-                    ),
-                    correctAnswerIndex = 2
-                )
-            )
-        )
-    )
+    init {
+        // Use a coroutine to perform the file reading on a background thread
+            val json = readJsonFromFile("questions.json")
+            topics = Gson().fromJson(json, object : TypeToken<List<Topic>>() {}.type)
+            isInitialized = true
+    }
+
 
 
     override fun getTopics(): List<Topic> {
+        while (!isInitialized) {
+            // Wait for initialization
+        }
         return topics
     }
+
+    private fun readJsonFromFile(fileName: String): String {
+        // Specify the path to the file on the device's storage
+        val filePath = applicationContext.filesDir.absolutePath + File.separator + fileName
+
+        // Use a FileReader to read the file
+        return FileReader(filePath).use { fileReader ->
+            fileReader.readText()
+        }
+    }
 }
+
+
+//interface TopicRepository {
+//    fun getTopics(): List<Topic>
+//}
+//
+//class InMemoryTopicRepository(private val applicationContext: Context) : TopicRepository {
+//    private var topics: List<Topic> = emptyList()
+//    private var isInitialized = false
+//
+//    init {
+//        // Use a coroutine to perform the network request on a background thread
+//        GlobalScope.launch(Dispatchers.IO) {
+//            val json = downloadJsonFromUrl("https://tednewardsandbox.site44.com/questions.json")
+//            topics = Gson().fromJson(json, object : TypeToken<List<Topic>>() {}.type)
+//            isInitialized = true
+//        }
+//    }
+//
+//    override fun getTopics(): List<Topic> {
+//        while (!isInitialized) {
+//
+//        }
+//        return topics
+//    }
+//
+//    private fun downloadJsonFromUrl(urlString: String): String {
+//        val url = URL(urlString)
+//        val connection = url.openConnection() as HttpURLConnection
+//        connection.requestMethod = "GET"
+//
+//        val inputStream = connection.inputStream
+//        val reader = BufferedReader(InputStreamReader(inputStream))
+//        val stringBuilder = StringBuilder()
+//        var line: String?
+//
+//        while (reader.readLine().also { line = it } != null) {
+//            stringBuilder.append(line)
+//        }
+//
+//        reader.close()
+//        connection.disconnect()
+//
+//        return stringBuilder.toString()
+//    }
+//}

@@ -5,15 +5,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import android.widget.Button
-
-
+import android.util.Log
 
 
 class TopicOverviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_topic_overview)
-
 
         val topicTitle = findViewById<TextView>(R.id.topicTitle)
         val topicDescription = findViewById<TextView>(R.id.topicDescription)
@@ -23,14 +21,19 @@ class TopicOverviewActivity : AppCompatActivity() {
 
         // Get the selected topic title from the "Topic List" page
         val selectedTopicTitle = intent.getStringExtra("selectedTopic")
+        // Add this in TopicOverviewActivity.onCreate()
+        Log.d("TopicOverviewActivity", "Selected Topic Title: $selectedTopicTitle")
+
 
 
         // Initialize a topic repository
-        val topicRepository: TopicRepository = InMemoryTopicRepository()
+        val topicRepository: TopicRepository = InMemoryTopicRepository(applicationContext)
 
 
         // Find the selected topic from the repository
         val selectedTopic = topicRepository.getTopics().find { it.title == selectedTopicTitle }
+
+        Log.d("TopicOverviewActivity", "Selected Topic Data: $selectedTopic")
 
 
         // Check if the selected topic exists
@@ -40,7 +43,10 @@ class TopicOverviewActivity : AppCompatActivity() {
 
 
             // Display the long description based on the selected topic
-            topicDescription.text = selectedTopic.longDescription
+            // ORIGINAL
+//            topicDescription.text = selectedTopic.longDescription
+            // CHANGED
+            topicDescription.text = selectedTopic.desc
 
 
             // Display the number of questions

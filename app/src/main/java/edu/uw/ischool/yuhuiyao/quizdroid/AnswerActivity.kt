@@ -26,7 +26,7 @@ class AnswerActivity : AppCompatActivity() {
 
 
         // Initialize a topic repository
-        val topicRepository: TopicRepository = InMemoryTopicRepository()
+        val topicRepository: TopicRepository = InMemoryTopicRepository(applicationContext)
 
         // Find the selected topic from the repository based on the title
         val selectedTopicData = topicRepository.getTopics().find { it.title == selectedTopic }
@@ -38,8 +38,8 @@ class AnswerActivity : AppCompatActivity() {
             // Handle unknown topics or provide a default behavior
         }
 
-        val correctIndex = questions[questionIndex].correctAnswerIndex
-        val correctAnswer = questions[questionIndex].answerChoices[correctIndex]
+        val correctIndex = questions[questionIndex].answer
+        val correctAnswer = questions[questionIndex].answers[correctIndex]
 
         // Set the text for the user's answer and correct answer TextViews.
         userAnswerTextView.text = "Your Answer: $userAnswer"

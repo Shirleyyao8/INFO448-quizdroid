@@ -10,6 +10,7 @@ import android.content.Intent
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import android.util.Log
 
 class QuestionActivity : AppCompatActivity() {
 
@@ -32,17 +33,22 @@ class QuestionActivity : AppCompatActivity() {
         var questionIndex = intent.getIntExtra("questionIndex", 0)
         var correctAnswerCount = intent.getIntExtra("correctAnswerCount", 0)
 
+        Log.d("QuestionActivity", "Selected Topic Title: $selectedTopic")
+
         // Initialize a topic repository
-        val topicRepository: TopicRepository = InMemoryTopicRepository()
+        val topicRepository: TopicRepository = InMemoryTopicRepository(applicationContext)
 
         // Find the selected topic from the repository based on the title
         val selectedTopicData = topicRepository.getTopics().find { it.title == selectedTopic }
+
+        Log.d("QuestionActivity", "Selected Topic Data: $selectedTopicData")
 
         if (selectedTopicData != null) {
             // Assign list of questions based on the selected topic
             questions = selectedTopicData.questions
         } else {
-            // Handle unknown topics or provide a default behavior
+            Log.e("QuestionActivity", "Selected topic not found")
+            finish() // Finish the activity if the topic is not found
         }
 
         // Display the first question
@@ -83,13 +89,14 @@ class QuestionActivity : AppCompatActivity() {
                 findViewById<RadioButton>(R.id.radioButton4)
             )
 
-            questionTextView.text = question.questionText
+            questionTextView.text = question.text
 
             for ((index, radioButton) in radioButtons.withIndex()) {
-                radioButton.text = question.answerChoices[index]
+                radioButton.text = question.answers[index]
             }
         } else {
             // Handle the end of the questions or provide a behavior
+            Log.d("QuestionActivity", "End of questions")
         }
     }
 }
