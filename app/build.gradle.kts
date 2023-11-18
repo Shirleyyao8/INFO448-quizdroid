@@ -42,13 +42,16 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("androidx.appcompat:appcompat:1.6.1")
-//    implementation ("androidx.preference:preference-ktx:1.2.1")
-//    implementation ("androidx.fragment:fragment-ktx:1.6.2")
-    //  unnecssary?
+    implementation ("androidx.preference:preference-ktx:1.2.1")
+    implementation ("androidx.preference:preference:1.2.1")
+    implementation ("androidx.fragment:fragment-ktx:1.6.2")
+
     implementation ("androidx.core:core-ktx:1.12.0")
     implementation ("com.google.code.gson:gson:2.8.9")
     implementation ("androidx.multidex:multidex:2.0.1")
-    implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.5.21")
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    implementation ("com.google.android.material:material:1.10.0")
+    implementation("androidx.preference:preference-ktx:1.2.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
