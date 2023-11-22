@@ -41,11 +41,6 @@ class TopicOverviewActivity : AppCompatActivity() {
             // Display the selected topic title
             topicTitle.text = selectedTopic.title
 
-
-            // Display the long description based on the selected topic
-            // ORIGINAL
-//            topicDescription.text = selectedTopic.longDescription
-            // CHANGED
             topicDescription.text = selectedTopic.desc
 
 

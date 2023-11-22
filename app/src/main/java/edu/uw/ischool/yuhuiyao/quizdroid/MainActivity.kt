@@ -26,12 +26,23 @@ import android.content.SharedPreferences
 import android.view.MenuInflater
 import android.app.DownloadManager
 import android.net.Uri
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
+import android.widget.Toast
+import android.provider.Settings
+
 
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var topicRepository: TopicRepository
-    private lateinit var toolbar: MaterialToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.Main) {
             val topics = withContext(Dispatchers.IO) {
                 topicRepository.getTopics()
+
             }
 
             val topicsWithDescriptions = topics.map { "${it.title}" }.toTypedArray()
@@ -60,13 +72,54 @@ class MainActivity : AppCompatActivity() {
             navigateToTopicOverview(selectedTopic)
         }
 
-
         setSupportActionBar(findViewById(R.id.toolbar))
+
+        if (!isNetworkAvailable()) {
+            if (isAirplaneModeOn()) {
+                Toast.makeText(this, "Airplane mode is enabled. Please disable it to access the internet.", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS)
+                startActivity(intent)
+            }
+            Toast.makeText(this, "No internet access. Please check your connection.", Toast.LENGTH_SHORT).show()
+        }
 
     }
 
+    // CHECK IF PHONE IS OFFLINE
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+            return networkCapabilities != null &&
+                    (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
+        } else {
+            val networkInfo = connectivityManager.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
+    }
+
+    // CHECK IF PHONE IS ON AIRPLANE MODE
+    private fun isAirplaneModeOn(): Boolean {
+        return Settings.Global.getInt(
+            contentResolver,
+            Settings.Global.AIRPLANE_MODE_ON,
+            0
+        ) != 0
+    }
+
+    private fun promptToDisableAirplaneMode() {
+        Toast.makeText(this, "Airplane mode is enabled. Please disable it to access the internet.", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS)
+        startActivity(intent)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        return super.onCreateOptionsMenu(menu)
         val inflator: MenuInflater = menuInflater
         inflator.inflate(R.menu.activity_main_menu, menu)
         return true
@@ -80,12 +133,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 Log.i("MainActivity", "clicked")
 
-//                val sharedPreferences: SharedPreferences =
-//                    PreferenceManager.getDefaultSharedPreferences(this)
-//                val url = sharedPreferences.getString("pref_key_url", "http://tednewardsandbox.site44.com/questions.json")
-//                val interval =
-//                    sharedPreferences.getString("pref_key_interval", "10")?.toInt() ?: 10
-
                 return true
             }
             // other menu items...
@@ -96,6 +143,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigateToTopicOverview(topic: Topic) {
         val intent = Intent(this, TopicOverviewActivity::class.java)
+
+        Log.d("MainActivity", "Navigating to TopicOverviewActivity with topic: ${topic.title}")
+
         intent.putExtra("selectedTopic", topic.title)
         startActivity(intent)
     }

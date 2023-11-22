@@ -45,6 +45,9 @@ dependencies {
     implementation ("androidx.preference:preference-ktx:1.2.1")
     implementation ("androidx.preference:preference:1.2.1")
     implementation ("androidx.fragment:fragment-ktx:1.6.2")
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0") // Use the latest version
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+
 
     implementation ("androidx.core:core-ktx:1.12.0")
     implementation ("com.google.code.gson:gson:2.8.9")
