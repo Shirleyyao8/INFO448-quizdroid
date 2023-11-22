@@ -54,18 +54,21 @@ class MainActivity : AppCompatActivity() {
 
         val listView = findViewById<ListView>(R.id.topicListView)
 
-        // Use a CoroutineScope to launch a coroutine for UI updates
+//         Use a CoroutineScope to launch a coroutine for UI updates
         GlobalScope.launch(Dispatchers.Main) {
             val topics = withContext(Dispatchers.IO) {
                 topicRepository.getTopics()
 
             }
 
+
             val topicsWithDescriptions = topics.map { "${it.title}" }.toTypedArray()
 
             val adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, topicsWithDescriptions)
             listView.adapter = adapter
         }
+
+
 
         listView.setOnItemClickListener { _, _, position, _ ->
             val selectedTopic = topicRepository.getTopics()[position] // Get the selected topic object
@@ -74,15 +77,23 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        if (!isNetworkAvailable()) {
-            if (isAirplaneModeOn()) {
-                Toast.makeText(this, "Airplane mode is enabled. Please disable it to access the internet.", Toast.LENGTH_SHORT).show()
+        if (isAirplaneModeOn()) {
+            Toast.makeText(
+                this,
+                "Airplane mode is enabled. Please disable it to access the internet.",
+                Toast.LENGTH_SHORT
+            ).show()
 
-                val intent = Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS)
-                startActivity(intent)
-            }
-            Toast.makeText(this, "No internet access. Please check your connection.", Toast.LENGTH_SHORT).show()
+            val intent = Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS)
+            startActivity(intent)
+        } else if (!isNetworkAvailable()) {
+            Toast.makeText(
+                this,
+                "No internet access. Please check your connection.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
+
 
     }
 

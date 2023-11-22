@@ -61,7 +61,7 @@ class InMemoryTopicRepository(private val applicationContext: Context) : TopicRe
 
             Toast.makeText(applicationContext, "Downloading from: $url", Toast.LENGTH_SHORT).show()
 
-            GlobalScope.launch(Dispatchers.IO) {
+
                 try {
                     downloadJsonFile(
                         url,
@@ -78,7 +78,7 @@ class InMemoryTopicRepository(private val applicationContext: Context) : TopicRe
                 } catch (e: Exception) {
                     callback?.onInitializationError(e)
                 }
-            }
+
         } catch (e: Exception) {
             Log.e("InMemoryTopicRepository", "Error: ${e.message}", e)
             callback?.onInitializationError(e)
@@ -141,6 +141,7 @@ fun downloadJsonFile(urlString: String, destinationPath: String) {
         Log.e("Download", "Error downloading file: ${e.message}", e)
     }
 }
+
 
 
 //package edu.uw.ischool.yuhuiyao.quizdroid
