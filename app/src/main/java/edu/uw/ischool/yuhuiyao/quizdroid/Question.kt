@@ -61,7 +61,7 @@ class InMemoryTopicRepository(private val applicationContext: Context) : TopicRe
 
             Toast.makeText(applicationContext, "Downloading from: $url", Toast.LENGTH_SHORT).show()
 
-            GlobalScope.launch(Dispatchers.IO) {
+
                 try {
                     downloadJsonFile(
                         url,
@@ -78,7 +78,7 @@ class InMemoryTopicRepository(private val applicationContext: Context) : TopicRe
                 } catch (e: Exception) {
                     callback?.onInitializationError(e)
                 }
-            }
+
         } catch (e: Exception) {
             Log.e("InMemoryTopicRepository", "Error: ${e.message}", e)
             callback?.onInitializationError(e)
